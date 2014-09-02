@@ -12,3 +12,5 @@ ADD ./server $HOME/server
 RUN cd $HOME/server && cabal install --only-dependencies
 
 RUN cd $HOME/server && cabal install
+
+CMD ["/root/.cabal/bin/bot","--no-access-log","--no-error-log"]
