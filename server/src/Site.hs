@@ -11,7 +11,10 @@ module Site
 ------------------------------------------------------------------------------
 import           Control.Applicative
 import           Data.ByteString (ByteString)
+import qualified Data.ByteString.Char8 as CBS
+import qualified Data.ByteString.Lazy as LBS
 import qualified Data.Text as T
+import           Snap (liftIO)
 import           Snap.Core
 import           Snap.Snaplet
 import           Snap.Snaplet.Heist
@@ -20,14 +23,54 @@ import           Heist
 import qualified Heist.Interpreted as I
 ------------------------------------------------------------------------------
 import           Application
+------------------------------------------------------------------------------
+import           System.IO.Streams (InputStream, OutputStream, stdout)
+import qualified System.IO.Streams as Streams
+import qualified Data.ByteString as S
+import           Network.Http.Client
+import           Webhooks.Slack.Types
+import           Data.Aeson (encode)
+import           System.Environment
 
 myHandler :: Handler App App ()
-myHandler = writeBS "Whaaaat"
+myHandler = do
+  x <- liftIO $ pingSlack slackNote
+  writeBS x
 
+getSlackURL = do
+  company <- getEnv "SLACK_SUBDOMAIN"
+  token <- getEnv "SLACK_TOKEN"
+  return $ CBS.concat [ "https://"
+                 , CBS.pack company
+                 , ".slack.com/services/hooks/incoming-webhook?token="
+                 , CBS.pack token
+                 ]
+
+--pingSlack :: ToSlack -> IO ()
+pingSlack toSlack = do
+  slackURL <- getSlackURL
+  postForm slackURL
+                     [("payload",LBS.toStrict $ encode toSlack)]
+                     concatHandler
+
+
+slackNote :: ToSlack
+slackNote = ToSlack { channel = Just $ Channel "@biscarch"
+                    , text =  "Testing Slack"
+                    , username = Just $ BotName "BotBot"
+                    , icon_emoji = Just TRIUMPH
+                    , icon_url = Nothing }
+
+fromHubHandler :: Handler App App ()
+fromHubHandler = do
+  params <- getParams
+  liftIO $ print $ show params
+  writeBS "Done"
 ------------------------------------------------------------------------------
 -- | The application's routes.
 routes :: [(ByteString, Handler App App ())]
 routes = [("", myHandler)
+         ,("/from_hub", fromHubHandler)
          ,("", serveDirectory "static")]
 
 
