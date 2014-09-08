@@ -71,8 +71,12 @@ fromHubHandler = do
       liftIO $ pingSlack $ slackNote
         { text =  T.pack err
         , icon_emoji = Just TRIUMPH }
-      writeBS "Done"
-    Right fromHub -> writeText $ callback_url fromHub
+      writeBS "Hub Failure"
+    Right fromHub -> do
+      liftIO $ pingSlack $ slackNote
+        { text = callback_url fromHub
+        , icon_emoji = Just DOG}
+      writeBS "Hub Success"
 ------------------------------------------------------------------------------
 -- | The application's routes.
 routes :: [(ByteString, Handler App App ())]
