@@ -14,8 +14,8 @@ RUN cabal update
 
 # Include Dev webhooks types
 RUN echo "redo webhooks pul"
-#RUN git clone https://github.com/ChristopherBiscardi/webhooks.git $HOME/webhooks
-ADD ./webhooks $HOME/webhooks
+RUN git clone https://github.com/ChristopherBiscardi/webhooks.git $HOME/webhooks
+#ADD ./webhooks $HOME/webhooks
 #RUN cd $HOME/webhooks && cabal install
 # END Dev webhooks types
 
