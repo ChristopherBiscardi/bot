@@ -67,7 +67,11 @@ fromHubHandler :: Handler App App ()
 fromHubHandler = do
   eitherJSON <- getJSON
   case eitherJSON of
-    Left err -> writeBS $ CBS.pack err
+    Left err -> do
+      liftIO $ pingSlack $ slackNote
+        { text =  T.pack err
+        , icon_emoji = Just TRIUMPH }
+      writeBS "Done"
     Right fromHub -> writeText $ callback_url fromHub
 ------------------------------------------------------------------------------
 -- | The application's routes.
