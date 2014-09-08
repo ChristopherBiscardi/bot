@@ -31,6 +31,8 @@ import           Network.Http.Client
 import           Webhooks.Slack.Types
 import           Data.Aeson (encode)
 import           System.Environment
+import           JSON.JSON
+import           Webhooks.Docker.Hub.Types
 
 myHandler :: Handler App App ()
 myHandler = do
@@ -63,9 +65,10 @@ slackNote = ToSlack { channel = Just $ Channel "@biscarch"
 
 fromHubHandler :: Handler App App ()
 fromHubHandler = do
-  params <- getParams
-  liftIO $ print $ show params
-  writeBS "Done"
+  eitherJSON <- getJSON
+  case eitherJSON of
+    Left err -> writeBS $ CBS.pack err
+    Right fromHub -> writeText $ callback_url fromHub
 ------------------------------------------------------------------------------
 -- | The application's routes.
 routes :: [(ByteString, Handler App App ())]
