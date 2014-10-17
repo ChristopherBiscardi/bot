@@ -36,7 +36,9 @@ import           Webhooks.Docker.Hub.Types
 
 myHandler :: Handler App App ()
 myHandler = do
-  x <- liftIO $ pingSlack slackNote
+  txt <- getRequest
+  x <- liftIO $ pingSlack $ slackNote
+    { text = T.pack $ show $ txt }
   writeBS x
 
 getSlackURL = do
