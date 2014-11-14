@@ -38,7 +38,7 @@ myHandler :: Handler App App ()
 myHandler = do
   txt <- getRequest
   x <- liftIO $ pingSlack $ slackNote
-    { text = T.pack $ show $ txt }
+    { text = T.pack $ show $ rqServerName txt }
   writeBS x
 
 getSlackURL = do
