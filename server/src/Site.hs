@@ -10,29 +10,29 @@ module Site
 
 ------------------------------------------------------------------------------
 import           Control.Applicative
-import           Data.ByteString (ByteString)
-import qualified Data.ByteString.Char8 as CBS
-import qualified Data.ByteString.Lazy as LBS
-import qualified Data.Text as T
-import           Snap (liftIO)
+import           Control.Monad.IO.Class    (liftIO)
+import           Data.ByteString           (ByteString)
+import qualified Data.ByteString.Char8     as CBS
+import qualified Data.ByteString.Lazy      as LBS
+import qualified Data.Text                 as T
+import           Heist
+import qualified Heist.Interpreted         as I
 import           Snap.Core
 import           Snap.Snaplet
 import           Snap.Snaplet.Heist
 import           Snap.Util.FileServe
-import           Heist
-import qualified Heist.Interpreted as I
 ------------------------------------------------------------------------------
 import           Application
 ------------------------------------------------------------------------------
-import           System.IO.Streams (InputStream, OutputStream, stdout)
-import qualified System.IO.Streams as Streams
-import qualified Data.ByteString as S
-import           Network.Http.Client
-import           Webhooks.Slack.Types
-import           Data.Aeson (encode)
-import           System.Environment
+import           Data.Aeson                (encode)
+import qualified Data.ByteString           as S
 import           JSON.JSON
+import           Network.Http.Client
+import           System.Environment
+import           System.IO.Streams         (InputStream, OutputStream, stdout)
+import qualified System.IO.Streams         as Streams
 import           Webhooks.Docker.Hub.Types
+import           Webhooks.Slack.Types
 
 myHandler :: Handler App App ()
 myHandler = do
